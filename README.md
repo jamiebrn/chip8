@@ -1,5 +1,5 @@
 # Chip8 emulator
-Written in C++, use CMake for building.
+Written in C++, use CMake for building. Uses SDL for OS specific functions and rendering.
 
 ROM taken as command line argument. Alternatively, drag and drop the Chip8 ROM file onto the compiled executable.
 
