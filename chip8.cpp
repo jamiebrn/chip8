@@ -50,28 +50,32 @@ int main(int arg, char** args)
     std::fill(registers, registers + 15, 0);
     std::fill(stack, stack + 15, 0);
 
-    memory[0 + 1 * 0] = 0xF0; memory[1 + 1 * 0] = 0x90; memory[2 + 1 * 0] = 0x90; memory[3 + 1 * 0] = 0x90; memory[4 + 1 * 0] = 0xF0; // 0
-    memory[0 + 1 * 1] = 0x20; memory[1 + 2 * 1] = 0x60; memory[2 + 3 * 1] = 0x20; memory[3 + 4 * 1] = 0x20; memory[4 + 5 * 1] = 0x70; // 1
-    memory[0 + 1 * 2] = 0xF0; memory[1 + 2 * 2] = 0x10; memory[2 + 3 * 2] = 0xF0; memory[3 + 4 * 2] = 0x80; memory[4 + 5 * 2] = 0xF0; // 2
-    memory[0 + 1 * 3] = 0xF0; memory[1 + 2 * 3] = 0x10; memory[2 + 3 * 3] = 0xF0; memory[3 + 4 * 3] = 0x10; memory[4 + 5 * 3] = 0xF0; // 3
-    memory[0 + 1 * 4] = 0x90; memory[1 + 2 * 4] = 0x90; memory[2 + 3 * 4] = 0xF0; memory[3 + 4 * 4] = 0x10; memory[4 + 5 * 4] = 0x10; // 4
-    memory[0 + 1 * 5] = 0xF0; memory[1 + 2 * 5] = 0x80; memory[2 + 3 * 5] = 0xF0; memory[3 + 4 * 5] = 0x10; memory[4 + 5 * 5] = 0xF0; // 5
-    memory[0 + 1 * 6] = 0xF0; memory[1 + 2 * 6] = 0x80; memory[2 + 3 * 6] = 0xF0; memory[3 + 4 * 6] = 0x90; memory[4 + 5 * 6] = 0xF0; // 6
-    memory[0 + 1 * 7] = 0xF0; memory[1 + 2 * 7] = 0x10; memory[2 + 3 * 7] = 0x20; memory[3 + 4 * 7] = 0x40; memory[4 + 5 * 7] = 0x40; // 7
-    memory[0 + 1 * 8] = 0xF0; memory[1 + 2 * 8] = 0x90; memory[2 + 3 * 8] = 0xF0; memory[3 + 4 * 8] = 0x90; memory[4 + 5 * 8] = 0xF0; // 8
-    memory[0 + 1 * 9] = 0xF0; memory[1 + 2 * 9] = 0x90; memory[2 + 3 * 9] = 0xF0; memory[3 + 4 * 9] = 0x10; memory[4 + 5 * 9] = 0xF0; // 9
-    memory[0 + 1 * 10] = 0xF0; memory[1 + 2 * 10] = 0x90; memory[2 + 3 * 10] = 0xF0; memory[3 + 4 * 10] = 0x90; memory[4 + 5 * 10] = 0x90; // A
-    memory[0 + 1 * 11] = 0xE0; memory[1 + 2 * 11] = 0x90; memory[2 + 3 * 11] = 0xE0; memory[3 + 4 * 11] = 0x90; memory[4 + 5 * 11] = 0xE0; // B
-    memory[0 + 1 * 12] = 0xF0; memory[1 + 2 * 12] = 0x80; memory[2 + 3 * 12] = 0x80; memory[3 + 4 * 12] = 0x80; memory[4 + 5 * 12] = 0xF0; // C
-    memory[0 + 1 * 13] = 0xE0; memory[1 + 2 * 13] = 0x90; memory[2 + 3 * 13] = 0x90; memory[3 + 4 * 13] = 0x90; memory[4 + 5 * 13] = 0xE0; // D
-    memory[0 + 1 * 14] = 0xF0; memory[1 + 2 * 14] = 0x80; memory[2 + 3 * 14] = 0xF0; memory[3 + 4 * 14] = 0x80; memory[4 + 5 * 14] = 0xF0; // E
-    memory[0 + 1 * 15] = 0xF0; memory[1 + 2 * 15] = 0x80; memory[2 + 3 * 15] = 0xF0; memory[3 + 4 * 15] = 0x80; memory[4 + 5 * 15] = 0x80; // F
+    uint8_t font[80] = {
+        0xF0, 0x90, 0x90, 0x90, 0xF0, // 0
+        0x20, 0x60, 0x20, 0x20, 0x70, // 1
+        0xF0, 0x10, 0xF0, 0x80, 0xF0, // 2
+        0xF0, 0x10, 0xF0, 0x10, 0xF0, // 3
+        0x90, 0x90, 0xF0, 0x10, 0x10, // 4
+        0xF0, 0x80, 0xF0, 0x10, 0xF0, // 5
+        0xF0, 0x80, 0xF0, 0x90, 0xF0, // 6
+        0xF0, 0x10, 0x20, 0x40, 0x40, // 7
+        0xF0, 0x90, 0xF0, 0x90, 0xF0, // 8
+        0xF0, 0x90, 0xF0, 0x10, 0xF0, // 9
+        0xF0, 0x90, 0xF0, 0x90, 0x90, // A
+        0xE0, 0x90, 0xE0, 0x90, 0xE0, // B
+        0xF0, 0x80, 0x80, 0x80, 0xF0, // C
+        0xE0, 0x90, 0x90, 0x90, 0xE0, // D
+        0xF0, 0x80, 0xF0, 0x80, 0xF0, // E
+        0xF0, 0x80, 0xF0, 0x80, 0x80  // F
+    };
+
+    std::copy(font, font + 80, memory);
 
     std::ifstream input(args[1], std::ios::binary);
 
     std::vector<char> bytes(
-         (std::istreambuf_iterator<char>(input)),
-         (std::istreambuf_iterator<char>()));
+        (std::istreambuf_iterator<char>(input)),
+        (std::istreambuf_iterator<char>()));
 
     input.close();
 
@@ -146,6 +150,8 @@ int main(int arg, char** args)
             soundRegister = std::max(soundRegister - 1, 0);
 
             uint16_t instruction = ((static_cast<uint16_t>(memory[programCounter]) << 8) | static_cast<uint16_t>(memory[programCounter + 1]));
+            
+            programCounter += 2;
 
             if (instruction == 0x00E0) // Clear screen
             {
@@ -290,7 +296,6 @@ int main(int arg, char** args)
                 bool erased = false;
                 for (int i = 0; i < spriteHeight; i++)
                 {
-                    // TODO: make this work
                     uint64_t spriteLine = static_cast<uint64_t>(memory[iregister + i]) << (7 * 8);
                     uint16_t displayLinePtr = displayPtr + ((yDraw + i) % RES_Y) * RES_X / 8;
                     uint64_t displayLine = 0;
@@ -377,13 +382,12 @@ int main(int arg, char** args)
                     registers[i] = memory[iregister + i];
                 }
             }
-
-            programCounter += 2;
         }
 
         SDL_SetRenderDrawColor(renderer, 0, 0, 0, 255);
         SDL_RenderClear(renderer);
 
+        // Display screen
         for (int y = 0; y < RES_Y; y++)
         {
             uint64_t displayLine = 0;
