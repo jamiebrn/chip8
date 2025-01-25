@@ -1,4 +1,6 @@
 #include <SDL.h>
+#define _USE_MATH_DEFINES
+#include <cmath>
 #include <stdlib.h>
 #include <time.h>
 #include <stdint.h>
@@ -7,6 +9,17 @@
 #include <fstream>
 #include <iterator>
 #include <vector>
+
+void audio_callback(void* userdata, Uint8* stream, int length)
+{
+	Sint16* samples = reinterpret_cast<Sint16*>(stream);
+	int sample_count = length / sizeof(Sint16);
+	
+	for (int i = 0; i < sample_count; ++i)
+	{
+		samples[i] = std::pow(std::sin(static_cast<float>(i) / static_cast<float>(sample_count) * 2 * M_PI * 30), 2) * 10000;
+	}
+}
 
 int main(int arg, char** args)
 {
@@ -84,6 +97,14 @@ int main(int arg, char** args)
         memory[512 + i] = bytes[i];
     }
 
+    SDL_AudioSpec spec = {0};
+	spec.freq = 44100;
+	spec.format = AUDIO_S16SYS;
+	spec.channels = 1;
+	spec.samples = 4096;
+	spec.callback = audio_callback;
+	SDL_AudioDeviceID device_id = SDL_OpenAudioDevice(NULL, 0, &spec, NULL, 0);
+
     bool running = true;
 
     const uint8_t* keyboardState = SDL_GetKeyboardState(NULL);
@@ -129,6 +150,8 @@ int main(int arg, char** args)
         memory[keyboardPtr + 14] = keyboardState[SDL_Scancode::SDL_SCANCODE_F]; // E;
         memory[keyboardPtr + 15] = keyboardState[SDL_Scancode::SDL_SCANCODE_V]; // F;
 
+        // Play audio if required
+        SDL_PauseAudioDevice(device_id, (soundRegister > 0) ? 0 : 1);
 
         if (memory[waitKeyboardPtr])
         {
