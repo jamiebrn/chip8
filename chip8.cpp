@@ -145,7 +145,7 @@ int main(int arg, char** args)
             delayRegister = std::max(delayRegister - 1, 0);
             soundRegister = std::max(soundRegister - 1, 0);
 
-            uint16_t instruction = (static_cast<uint16_t>(memory[programCounter]) << 8) | static_cast<uint16_t>(memory[programCounter + 1]);
+            uint16_t instruction = ((static_cast<uint16_t>(memory[programCounter]) << 8) | static_cast<uint16_t>(memory[programCounter + 1]));
 
             if (instruction == 0x00E0) // Clear screen
             {
@@ -241,7 +241,7 @@ int main(int arg, char** args)
             }
             else if ((instruction & 0xF00F) == 0x8006) // Shift register right and set register 15 to 1 if underflow
             {
-                registers[15] = registers[(instruction & 0x0F00) >> 8] & 0x01;
+                registers[15] = (registers[(instruction & 0x0F00) >> 8] & 0x01);
                 registers[(instruction & 0x0F00) >> 8] >> 1;
             }
             else if ((instruction & 0xF00F) == 0x8007) // Subtract value from register from another register (inverted) and set register 15 to NOT borrow flag
@@ -258,7 +258,7 @@ int main(int arg, char** args)
             }
             else if ((instruction & 0xF00F) == 0x800E) // Shift register left and set register 15 to 1 if overflow
             {
-                registers[15] = registers[(instruction & 0x0F00) >> 8] & 0x80;
+                registers[15] = (registers[(instruction & 0x0F00) >> 8] & 0x80);
                 registers[(instruction & 0x0F00) >> 8] << 1;
             }
             else if ((instruction & 0xF00F) == 0x9000) // Skip next instruction if register does not equal another
@@ -279,7 +279,7 @@ int main(int arg, char** args)
             else if ((instruction & 0xF000) == 0xC000) // Set register to value and bitwise AND with random value
             {
                 uint8_t random = rand() % 0xFF;
-                registers[(instruction & 0x0F00) >> 8] = ((instruction & 0x00FF)) & random;
+                registers[(instruction & 0x0F00) >> 8] = (((instruction & 0x00FF)) & random);
             }
             else if ((instruction & 0xF000) == 0xD000) // Draw sprite to screen
             {
@@ -294,23 +294,22 @@ int main(int arg, char** args)
                     uint64_t spriteLine = static_cast<uint64_t>(memory[iregister + i]) << (7 * 8);
                     uint16_t displayLinePtr = displayPtr + ((yDraw + i) % RES_Y) * RES_X / 8;
                     uint64_t displayLine = 0;
+
                     for (int lineChar = 0; lineChar < RES_X / 8; lineChar++)
                     {
-                        displayLine |= (memory[displayLinePtr + lineChar] << (8 * (RES_X / 8 - 1 - lineChar)));
-                    }
-                    uint64_t displayLineDrawn = displayLine ^ (spriteLine >> (xDraw % RES_X));
-                    for (int lineChar = 0; lineChar < RES_X / 8; lineChar++)
-                    {
-                        memory[displayLinePtr + lineChar] = ((displayLineDrawn >> (8 * ((RES_X / 8) - 1 - lineChar))) & 0xFF);
+                        displayLine = (displayLine << 8) | memory[displayLinePtr + lineChar];
                     }
 
-                    for (int i = 0; i < RES_X; i++)
+                    uint64_t displayLineDrawn = displayLine ^ (spriteLine >> (xDraw % RES_X));
+                    
+                    for (int lineChar = 0; lineChar < RES_X / 8; lineChar++)
                     {
-                        if (erased) break;
-                        if (((displayLine >> i) & 0x1) == 1 && ((displayLineDrawn >> i) & 0x1) == 0)
-                        {
-                            erased = true;
-                        }
+                        memory[displayLinePtr + lineChar] = ((displayLineDrawn >> (8 * (RES_X / 8 - 1 - lineChar))) & 0xFF);
+                    }
+
+                    if (displayLine & ~displayLineDrawn)
+                    {
+                        erased = true;
                     }
                 }
 
@@ -390,7 +389,7 @@ int main(int arg, char** args)
             uint64_t displayLine = 0;
             for (int lineChar = 0; lineChar < RES_X / 8; lineChar++)
             {
-                displayLine |= (memory[displayPtr + y * RES_X / 8 + lineChar] << (8 * (RES_X / 8 - 1 - lineChar)));
+                displayLine = (displayLine << 8) | memory[displayPtr + y * RES_X / 8 + lineChar];
             }
             for (int x = 0; x < RES_X; x++)
             {
